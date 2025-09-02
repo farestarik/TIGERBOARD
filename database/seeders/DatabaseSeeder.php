@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             'created_by' => 0
         ]);
 
-        $user->attachRole("owner");
+        $user->addRole("owner");
 
         Profile::create([
             'user_id' => $user->id

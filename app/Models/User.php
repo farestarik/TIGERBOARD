@@ -5,15 +5,16 @@ namespace App\Models;
 use App\Models\Profile;
 use App\Utilities\FilterBuilder;
 use Laravel\Sanctum\HasApiTokens;
+use Laratrust\Contracts\LaratrustUser;
 use Illuminate\Notifications\Notifiable;
-use Laratrust\Traits\LaratrustUserTrait;
+use Laratrust\Traits\HasRolesAndPermissions;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements LaratrustUser
 {
-    use LaratrustUserTrait;
+    use HasRolesAndPermissions;
     use HasApiTokens, HasFactory, Notifiable;
 
 
@@ -45,8 +46,9 @@ class User extends Authenticatable
         return ucfirst($name);
     }
 
-    public function getPicAttribute($pic){
-        if($pic == "default.png"){
+    public function getPicAttribute($pic)
+    {
+        if ($pic == "default.png") {
             return asset("pics/default.png");
         }
     }
@@ -60,12 +62,14 @@ class User extends Authenticatable
     }
 
 
-    public function profile(){
+    public function profile()
+    {
         return $this->hasOne(\App\Models\Profile::class);
     }
 
 
-    public function tenant(){
+    public function tenant()
+    {
         return $this->belongsTo(Tenant::class);
     }
 }

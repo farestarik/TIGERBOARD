@@ -44,12 +44,12 @@ class AdminController extends Controller
                         ->orWhere("email", "like", "%" . $request->search . "%");
                 })
                     ->where(function ($query) {
-                        $query->whereRoleIs("admin")
-                            ->orWhereRoleIs("owner");
+                        $query->whereHasRole("admin")
+                            ->orWhereHasRole("owner");
                     })
                     ->filterBy($filters);
             } else {
-                $admins = User::whereRoleIs("admin")->orWhereRoleIs('owner');
+                $admins = User::whereHasRole("admin")->orWhereHasRole('owner');
             }
         } else {
 
@@ -59,11 +59,11 @@ class AdminController extends Controller
                     $query->orWhere("username", "like", "%" . $request->search . "%");
                     $query->orWhere("email", "like", "%" . $request->search . "%");
                 })
-                    ->whereRoleIs("admin")
+                    ->whereHasRole("admin")
                     ->where("id", '<>', auth()->user()->created_by)
                     ->filterBy($filters);
             } else {
-                $admins = User::whereRoleIs("admin")->where("id", '<>', auth()->user()->created_by);
+                $admins = User::whereHasRole("admin")->where("id", '<>', auth()->user()->created_by);
             }
         }
 
@@ -103,11 +103,6 @@ class AdminController extends Controller
         $models = array_truncate($models);
 
         $models = removeElements($models, ['users']);
-
-
-        // $models = [
-        //     'users','admins','settings','profile'
-        // ];
 
 
 
@@ -161,10 +156,10 @@ class AdminController extends Controller
                 'user_id' => $admin->id
             ]);
 
-            $admin->attachRole("admin");
+            $admin->addRole("admin");
 
             if (!empty($request->permissions)) {
-                $admin->attachPermissions($request->permissions);
+                $admin->givePermissions($request->permissions);
             }
         });
 
@@ -245,7 +240,7 @@ class AdminController extends Controller
         if (!empty($request->permissions)) {
             $admin->syncPermissions($request->permissions);
         } else {
-            $admin->detachPermissions();
+            $admin->removePermissions();
         }
 
         clear_cache();
