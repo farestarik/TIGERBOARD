@@ -67,9 +67,4 @@ class User extends Authenticatable implements LaratrustUser
         return $this->hasOne(\App\Models\Profile::class);
     }
 
-
-    public function tenant()
-    {
-        return $this->belongsTo(Tenant::class);
-    }
 }
