@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
 {
-    public function __construct(){
+    public function __construct()
+    {
         $this->middleware(['permission:create_settings'])->only('create');
         $this->middleware(['permission:read_settings'])->only('index');
         $this->middleware(['permission:update_settings'])->only('edit');
@@ -23,8 +24,7 @@ class SettingsController extends Controller
      */
     public function index(Request $request)
     {
-        $tenant_id = session('userTenantID', 0);
-        $setting = Settings::where('tenant_id', $tenant_id)->first();
+        $setting = Settings::first();
 
         return view('dashboard.settings.index', compact('setting'));
     }
@@ -46,18 +46,14 @@ class SettingsController extends Controller
         $data = [
             "phone" => $request->phone,
             "company_name" => $request->company_name,
-            "commercial_register" => $request->commercial_register,
-            "tax_num" => $request->tax_num ?? NULL,
-            "address" => $request->address ?? NULL,
-            "max_document_size" => $request->max_document_size * 1024 ?? NULL,
         ];
 
-        if(request()->has('img')){
+        if (request()->has('img')) {
             $photo = $request->img;
             $photo_file = time() . '.' . $photo->getClientOriginalExtension();
-            if($photo->move('pics', $photo_file)){
-                if($old_img !== 'default.png'){
-                    Storage::disk("public_folder")->delete("pics/".$old_img);
+            if ($photo->move('pics', $photo_file)) {
+                if ($old_img !== 'default.png') {
+                    Storage::disk("public_folder")->delete("uploads/pics/" . $old_img);
                 }
             }
             $data['logo'] = $photo_file;
